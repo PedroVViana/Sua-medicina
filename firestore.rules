@@ -1,0 +1,72 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // REGRAS TEMPORÁRIAS PARA DESENVOLVIMENTO
+    // ⚠️ ALTERE PARA REGRAS MAIS SEGURAS EM PRODUÇÃO ⚠️
+    
+    // Permitir leitura e escrita para desenvolvimento
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}
+
+/*
+================================================================================
+REGRAS DE PRODUÇÃO - USE ESTAS REGRAS EM PRODUÇÃO
+================================================================================
+Copie e cole as regras abaixo quando estiver pronto para produção:
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Regras para produtos - leitura pública, escrita apenas para admins
+    match /products/{productId} {
+      allow read: if true;
+      allow write: if request.auth != null && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    // Regras para vendedores - leitura pública, escrita apenas para admins  
+    match /sellers/{sellerId} {
+      allow read: if true;
+      allow write: if request.auth != null && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    // Regras para cupons de vendedores - leitura pública, escrita apenas para admins
+    match /sellerCoupons/{couponId} {
+      allow read: if true;
+      allow write: if request.auth != null && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    // Regras para usuários
+    match /users/{userId} {
+      allow read: if request.auth != null && 
+        (request.auth.uid == userId || 
+         (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'));
+      
+      allow write: if request.auth != null;
+    }
+    
+    // Regras para pedidos
+    match /orders/{orderId} {
+      allow read: if request.auth != null && 
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin') ||
+        resource.data.customerEmail == request.auth.token.email;
+      
+      allow create: if true;
+      allow update, delete: if request.auth != null && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+  }
+}
+================================================================================
+*/
