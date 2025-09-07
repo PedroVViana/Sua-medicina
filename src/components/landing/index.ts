@@ -1,0 +1,9 @@
+export { default as Header } from './Header';
+export { default as HeroSection } from './HeroSection';
+export { default as ProductsSection } from './ProductsSection';
+export { default as ProductCategory } from './ProductCategory';
+export { default as ProductCard } from './ProductCard';
+export { default as WhyChooseSection } from './WhyChooseSection';
+export { default as CTASection } from './CTASection';
+export { default as LoginModal } from './LoginModal';
+export { default as Footer } from './Footer';
